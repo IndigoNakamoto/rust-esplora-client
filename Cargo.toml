@@ -22,7 +22,7 @@ path = "src/lib.rs"
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["alloc"], default-features = false }
-bitcoin = { version = "0.32", features = ["serde", "std"], default-features = false }
+bitcoin = { package = "litecoin", version = "0.32.8-rc.1", features = ["serde", "std"], default-features = false }
 hex = { version = "0.2", package = "hex-conservative" }
 log = "^0.4"
 minreq = { version = "2.11.0", features = ["json-using-serde"], optional = true }
@@ -38,6 +38,8 @@ lazy_static = "1.4.0"
 
 [features]
 default = ["blocking", "async", "async-https", "tokio"]
+# Bitcoin Core + electrs backed integration tests, unusable against this Litecoin fork.
+daemon-tests = []
 blocking = ["minreq", "minreq/proxy"]
 blocking-https = ["blocking", "minreq/https"]
 blocking-https-rustls = ["blocking", "minreq/https-rustls"]

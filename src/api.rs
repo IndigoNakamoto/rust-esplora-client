@@ -398,6 +398,11 @@ impl Tx {
                     script_pubkey: vout.scriptpubkey,
                 })
                 .collect(),
+            // Esplora's JSON representation carries no MWEB data, so a transaction rebuilt from it
+            // is always transparent. Use `get_tx` to obtain the consensus-encoded transaction if
+            // the MWEB body or the HogEx marker is needed.
+            mw_tx: None,
+            is_hog_ex: false,
         }
     }
 
