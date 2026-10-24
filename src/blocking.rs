@@ -51,6 +51,9 @@ pub struct BlockingClient {
 impl BlockingClient {
     /// Build a blocking client from a [`Builder`]
     pub fn from_builder(builder: Builder) -> Self {
+        #[cfg(feature = "rustls")]
+        ensure_crypto_provider();
+
         Self {
             url: builder.base_url,
             proxy: builder.proxy,
@@ -559,6 +562,24 @@ impl BlockingClient {
                 resp => return Ok(resp),
             }
         }
+    }
+}
+
+/// Make sure rustls has a process-level [`CryptoProvider`] before `minreq` builds its TLS
+/// config with `ClientConfig::builder()`.
+///
+/// rustls resolves a provider automatically only when exactly one of its `aws-lc-rs` / `ring`
+/// features is enabled. `minreq` enables `aws-lc-rs`; a consumer that also links `ring` (for
+/// example through `electrum-client`'s `use-rustls-ring`) ends up with both, and the first
+/// HTTPS request would panic unless something installed a provider first. Install the one
+/// `minreq` already pulls in. Losing the race to another installer is fine: any provider works.
+///
+/// [`CryptoProvider`]: rustls::crypto::CryptoProvider
+#[cfg(feature = "rustls")]
+fn ensure_crypto_provider() {
+    use rustls::crypto::{aws_lc_rs, CryptoProvider};
+    if CryptoProvider::get_default().is_none() {
+        let _ = CryptoProvider::install_default(aws_lc_rs::default_provider());
     }
 }
 

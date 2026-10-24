@@ -26,6 +26,11 @@ bitcoin = { package = "litecoin", version = "0.32.8-rc.1", features = ["serde", 
 hex = { version = "0.2", package = "hex-conservative" }
 log = "^0.4"
 minreq = { version = "3.0.0", features = ["json-using-serde"], optional = true }
+# Only to install a process-level CryptoProvider before minreq builds its
+# ClientConfig; see `ensure_crypto_provider` in src/blocking.rs. Same version
+# and default features (aws-lc-rs) as minreq's own rustls dependency, so this
+# adds nothing new to a consumer's graph.
+rustls = { version = "0.23.35", optional = true }
 reqwest = { version = "0.12",  features = ["json"], default-features = false, optional = true }
 
 # default async runtime
@@ -41,8 +46,8 @@ default = ["blocking", "async", "async-https", "tokio"]
 # Bitcoin Core + electrs backed integration tests, unusable against this Litecoin fork.
 daemon-tests = []
 blocking = ["minreq", "minreq/proxy"]
-blocking-https = ["blocking", "minreq/https"]
-blocking-https-rustls = ["blocking", "minreq/https-rustls"]
+blocking-https = ["blocking", "minreq/https", "rustls"]
+blocking-https-rustls = ["blocking", "minreq/https-rustls", "rustls"]
 blocking-https-native = ["blocking", "minreq/https-native-tls"]
 blocking-https-bundled = ["blocking", "minreq/https-openssl"]
 
