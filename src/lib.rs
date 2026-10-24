@@ -217,7 +217,10 @@ pub enum Error {
     },
     /// Invalid number returned
     Parsing(std::num::ParseIntError),
-    /// Invalid status code, unable to convert to `u16`
+    /// Invalid status code, unable to convert to `u16`.
+    ///
+    /// No longer produced: `minreq` 3 reports status codes as `u16` directly.
+    /// Kept so downstream exhaustive matches (bdk-ffi) stay source-compatible.
     StatusCode(TryFromIntError),
     /// Invalid Bitcoin data returned
     BitcoinEncoding(bitcoin::consensus::encode::Error),
